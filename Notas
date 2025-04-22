@@ -1,0 +1,17 @@
+Crear proyecto:
+
+-consola:
+flutter create auth_app
+cd auth_app
+
+
+Agregar dependencias: (fichero pubspec.yaml)
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.5
+  flutter_secure_storage: ^8.0.0
+
+
+-consola:
+flutter pub get
