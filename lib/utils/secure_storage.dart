@@ -1,63 +1,54 @@
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user.dart';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
+import '../models/user_registration_model.dart';
 
 class SecureStorage {
-  static final _storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage();
 
-  static Future<void> saveUsuario(User usuario) async {
-    debugPrint('✅ Guardando token: ${usuario.token}');
-    debugPrint('✅ Guardando refresh: ${usuario.refreshToken}');
-    try {
-      await _storage.write(key: 'access_token', value: usuario.token);
-      await _storage.write(key: 'refresh_token', value: usuario.refreshToken);
-      await _storage.write(
-        key: 'token_expiry',
-        value: usuario.tokenExpira.toIso8601String(),
-      );
-      await _storage.write(
-        key: 'refresh_expiry',
-        value: usuario.refreshExpira.toIso8601String(),
-      );
-      debugPrint('✔️ Tokens guardados correctamente');
-    } catch (e) {
-      debugPrint('❌ Error al guardar en SecureStorage: $e');
-    }
-  }
+  static const _keyToken = 'token';
+  static const _keyRefresh = 'refreshToken';
+  static const _keyTokenExp = 'tokenExp';
+  static const _keyRefreshExp = 'refreshExp';
+  static const _keyUserProfile = 'userProfile'; // ✅ NUEVO
 
-  static Future<String?> getAccessToken() async {
-    final token = await _storage.read(key: 'access_token');
-    debugPrint('🔎 Recuperado token: $token');
-    return token;
-  }
-
-  static Future<String?> getRefreshToken() async =>
-      await _storage.read(key: 'refresh_token');
-
-  static Future<DateTime?> getTokenExpiry() async {
-    final raw = await _storage.read(key: 'token_expiry');
-    return raw != null ? DateTime.tryParse(raw) : null;
-  }
-
-  static Future<DateTime?> getRefreshExpiry() async {
-    final raw = await _storage.read(key: 'refresh_expiry');
-    return raw != null ? DateTime.tryParse(raw) : null;
-  }
-
-  //static Future<void> clear() async => await _storage.deleteAll();
-
-  // Guardar tokens de acceso y refresh
-  static Future<void> saveTokens(User user) async {
-    await _storage.write(key: 'access_token', value: user.token);
-    await _storage.write(key: 'refresh_token', value: user.refreshToken);
+  static Future<void> saveUsuario(User user) async {
+    await _storage.write(key: _keyToken, value: user.token);
+    await _storage.write(key: _keyRefresh, value: user.refreshToken);
     await _storage.write(
-      key: 'token_expiry',
+      key: _keyTokenExp,
       value: user.tokenExpira.toIso8601String(),
     );
     await _storage.write(
-      key: 'refresh_expiry',
+      key: _keyRefreshExp,
       value: user.refreshExpira.toIso8601String(),
     );
   }
+
+  static Future<void> saveUserProfile(UserRegistrationModel profile) async {
+    final jsonString = jsonEncode(profile.toJson());
+    await _storage.write(key: _keyUserProfile, value: jsonString);
+  }
+
+  static Future<UserRegistrationModel?> getUserProfile() async {
+    final jsonString = await _storage.read(key: _keyUserProfile);
+    if (jsonString == null) return null;
+    final jsonMap = jsonDecode(jsonString);
+    return UserRegistrationModel.fromJson(jsonMap);
+  }
+
+  static Future<String?> getAccessToken() => _storage.read(key: _keyToken);
+  static Future<String?> getRefreshToken() => _storage.read(key: _keyRefresh);
+
+  static Future<DateTime?> getTokenExpiry() async {
+    final value = await _storage.read(key: _keyTokenExp);
+    return value != null ? DateTime.parse(value) : null;
+  }
+
+  static Future<DateTime?> getRefreshExpiry() async {
+    final value = await _storage.read(key: _keyRefreshExp);
+    return value != null ? DateTime.parse(value) : null;
+  }
+
+  static Future<void> clear() async => await _storage.deleteAll();
 }

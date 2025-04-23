@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Importa el paquete provider
+import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
-import 'providers/auth_provider.dart'; // Asegúrate de importar tu AuthProvider
+import 'providers/auth_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +13,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      // Aquí envolvemos la aplicación con el Provider
-      create: (context) => AuthProvider(), // Proveemos el AuthProvider
+      create: (context) => AuthProvider(),
       child: MaterialApp(
         title: 'Auth App',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: const LoginScreen(), // O la pantalla que desees como home
+        debugShowCheckedModeBanner:
+            false, // para activar o quitar la banderia de debug
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed:
+              Colors.deepPurple, // Cambia esto si prefieres otro color
+          brightness:
+              Brightness
+                  .light, // O usa Brightness.dark si prefieres modo oscuro
+        ),
+        home: const LoginScreen(),
       ),
     );
   }

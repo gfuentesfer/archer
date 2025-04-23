@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart'; // o la ruta correcta según tu estructura
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,13 +18,22 @@ class _LoginScreenState extends State<LoginScreen> {
   String _error = '';
 
   void _login() async {
-    final user = await _authService.login(
+    final loginResponse = await _authService.login(
       _emailController.text,
       _passwordController.text,
     );
 
-    if (user != null) {
-      debugPrint('✅ Usuario logueado. Token: ${user.token}');
+    if (loginResponse != null) {
+      // Guardar en el AuthProvider
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.setUsuarioCompleto(
+        loginResponse.user,
+        loginResponse.profile,
+      );
+
+      debugPrint('✅ Usuario logueado. Token: ${loginResponse.user.token}');
+
+      // Navegación
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),

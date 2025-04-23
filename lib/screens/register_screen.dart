@@ -111,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       try {
-        final success = await UserService().registerUser(user);
+        final success = await UserService().registerUser(user, context);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

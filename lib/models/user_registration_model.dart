@@ -43,6 +43,30 @@ class UserRegistrationModel {
     required this.blockedAt,
   });
 
+  factory UserRegistrationModel.fromJson(Map<String, dynamic> json) {
+    return UserRegistrationModel(
+      licenseId: json['licenseId'] ?? -1,
+      name: json['name'] ?? '',
+      familyName: json['familyName'] ?? '',
+      email: json['email'] ?? '',
+      birthDate: json['birthDate'] ?? '',
+      dni: json['dni'] ?? '',
+      hasClub: json['hasClub'] ?? false,
+      club: json['club'] ?? -1,
+      licenseDate: json['licenseDate'] ?? '',
+      address: Address.fromJson(json['address'] ?? {}),
+      category: json['category'] ?? '',
+      modality: json['modality'] ?? '',
+      userRoles: json['userRoles'] ?? '',
+      isActive: json['active'] ?? false, // 👈 ajustado
+      inactiveAt: json['inactiveAt'] ?? '',
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      isBlocked: json['blocked'] ?? false, // 👈 ajustado
+      blockedAt: json['blockedAt'] ?? '',
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'licenseId': licenseId,
@@ -86,6 +110,18 @@ class Address {
     required this.phone,
     required this.mobilePhone,
   });
+
+  factory Address.fromJson(Map<String, dynamic> json) {
+    return Address(
+      street: json['street'],
+      city: json['city'],
+      state: json['state'],
+      country: json['country'],
+      zipCode: json['zipCode'],
+      phone: json['phone'],
+      mobilePhone: json['mobilePhone'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

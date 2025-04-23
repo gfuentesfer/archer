@@ -3,14 +3,14 @@ import 'package:http/http.dart' as http;
 import '../models/user.dart';
 import '../utils/secure_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
+import '../models/login_response.dart';
 
 class AuthService {
   //static const _baseUrl = 'http://localhost:8085/api/v1/auth/login';
   //des emulador usa esta:
   static const _baseUrl = 'http://10.0.2.2:8085/api/v1'; // sin barra final
 
-  Future<User?> login(String userName, String password) async {
+  Future<LoginResponse?> login(String userName, String password) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
@@ -18,12 +18,14 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final usuario = User.fromJson(data);
-      await SecureStorage.saveUsuario(usuario);
-      debugPrint('🪪 Token recibido: ${usuario.token}');
-      debugPrint('🔐 Token guardado en SecureStorage: ${usuario.token}');
-      return usuario;
+      final data = jsonDecode(response.body); // data es Map<String, dynamic>
+      final loginResponse = LoginResponse.fromJson(data);
+
+      // Puedes guardar los tokens en SecureStorage si quieres
+      await SecureStorage.saveUsuario(loginResponse.user);
+
+      debugPrint('🪪 Token recibido: ${loginResponse.user.token}');
+      return loginResponse;
     } else {
       return null;
     }
@@ -73,7 +75,7 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final user = User.fromJson(data);
-      await SecureStorage.saveTokens(user);
+      await SecureStorage.saveUsuario(user);
       return user;
     }
 
